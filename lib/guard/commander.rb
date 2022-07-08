@@ -95,12 +95,13 @@ module Guard
     #
     def pause(expected = nil)
       paused = listener.paused?
-      states = { paused: true, unpaused: false, toggle: !paused }
-      pause = states[expected || :toggle]
-      fail ArgumentError, "invalid mode: #{expected.inspect}" if pause.nil?
-      return if pause == paused
+      stopped = listener.stopped?
+      states = { paused: true, stopped: true, unpaused: false, toggle: !paused }
+      pause_or_stop_listening = states[expected || :toggle]
+      fail ArgumentError, "invalid mode: #{expected.inspect}" if pause_or_stop_listening.nil?
+      return if pause_or_stop_listening == paused || stopped
 
-      if pause
+      if pause_or_stop_listening
         if ENV['GUARD_STOP_ON_PAUSE'] == 'true'
           listener.stop
           UI.info "File event handling has been stopped"
