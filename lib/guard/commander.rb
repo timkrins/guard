@@ -115,7 +115,6 @@ module Guard
           listener.start
         elsif stopped
           # cannot start from stopped for some reason. have to do it via private state machine transition.
-          listener.send(:transition, :initializing)
           listener.send(:transition, :backend_started)
           listener.send(:transition, :processing_events)
         end
