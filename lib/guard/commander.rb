@@ -111,7 +111,13 @@ module Guard
           UI.info "File event handling has been paused"
         end
       else
-        listener.start
+        if paused
+          listener.start
+        elsif stopped
+          # cannot start from stopped for some reason. have to do it via private state machine transition.
+          listener.send(:transition, :backend_started)
+          listener.send(:transition, :processing_events)
+        end
         UI.info "File event handling has been resumed"
       end
 
