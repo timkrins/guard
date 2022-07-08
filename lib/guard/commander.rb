@@ -96,10 +96,11 @@ module Guard
     def pause(expected = nil)
       paused = listener.paused?
       stopped = listener.stopped?
-      states = { paused: true, stopped: true, unpaused: false, toggle: !paused }
+      paused_or_stopped = paused || stopped
+      states = { paused: true, stopped: true, unpaused: false, toggle: !paused_or_stopped }
       pause_or_stop_listening = states[expected || :toggle]
       fail ArgumentError, "invalid mode: #{expected.inspect}" if pause_or_stop_listening.nil?
-      return if pause_or_stop_listening == paused || stopped
+      return if pause_or_stop_listening == paused_or_stopped
 
       if pause_or_stop_listening
         if ENV['GUARD_STOP_ON_PAUSE'] == 'true'
