@@ -100,8 +100,19 @@ module Guard
       fail ArgumentError, "invalid mode: #{expected.inspect}" if pause.nil?
       return if pause == paused
 
-      listener.public_send(pause ? :pause : :start)
-      UI.info "File event handling has been #{pause ? 'paused' : 'resumed'}"
+      if pause
+        if ENV['GUARD_STOP_ON_PAUSE'] == 'true'
+          listener.stop
+          UI.info "File event handling has been stopped"
+        else
+          listener.pause
+          UI.info "File event handling has been paused"
+        end
+      else
+        listener.start
+        UI.info "File event handling has been resumed"
+      end
+
     end
 
     def show
